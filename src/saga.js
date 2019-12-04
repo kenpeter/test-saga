@@ -12,9 +12,7 @@ function* getItems() {
   const response = yield call(myfetch, endpoint);
   const items = response;
 
-  //test
-  console.log('items', items);
-
+  // items assign to items
   yield put({type: 'ITEMS_GET_SUCCESS', items: items});
 }
 

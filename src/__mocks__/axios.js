@@ -1,4 +1,7 @@
-const axios = {
-  get: jest.fn(() => Promise.resolve({data: {}}))
-};
-export default axios;
+import axios from 'axios';
+
+export const BASE_URL = 'http://jsonplaceholder4444.typicode.com';
+
+export default axios.create({
+  baseURL: BASE_URL
+});

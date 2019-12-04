@@ -1,8 +1,14 @@
 // Follow this tutorial: https://medium.com/@lucaspenzeymoog/mocking-api-requests-with-jest-452ca2a8c7d7
+import moxios from 'moxios';
 import SagaTester from 'redux-saga-tester';
-import mockAxios from '../__mocks__/axios';
+import http from '../__mocks__/axios';
 import reducer from '../reducer';
 import {getItemsSaga} from '../saga';
+
+const fetchUserPosts = async id => {
+  const reponse = await http.get(`/users/${id}/posts`);
+  return reponse.data;
+};
 
 const initialState = {
   reducer: {
@@ -15,14 +21,14 @@ const options = {onError: console.error.bind(console)};
 
 describe('Saga', () => {
   beforeEach(() => {
-    mockAxios.get.mockImplementationOnce(() => Promise.resolve({key: 'val'}));
+    moxios.install(http);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    moxios.uninstall(http);
   });
 
-  it('Showcases the tester API', async () => {
+  it('test http', async () => {
     const sagaTester = new SagaTester({
       initialState,
       reducers: {reducer: reducer},
@@ -30,12 +36,37 @@ describe('Saga', () => {
       options
     });
 
+    // start
     sagaTester.start(getItemsSaga);
 
+    // fire
     sagaTester.dispatch({type: 'ITEMS_GET'});
 
-    await sagaTester.waitFor('ITEMS_GET_SUCCESS');
+    // exect
+    const expectedPosts = ['Post1', 'Post2'];
 
-    expect(sagaTester.getState()).toEqual({key: 'val'});
+    // wait done
+    moxios.wait(() => {
+      // api got result
+      const request = moxios.requests.mostRecent();
+      // gets response, and assign to state
+      request.respondWith({status: 200, response: expectedPosts}); //mocked response
+    });
+
+    // Next thing, not callback style
+    // state is done
+    await sagaTester.waitFor('ITEMS_GET_SUCCESS');
+    // now check state
+    expect(sagaTester.getState()).toEqual({
+      reducer: {
+        loading: true,
+        items: ['Post1', 'Post2']
+      }
+    });
+
+    // We can see that func got overwritten as well
+    //const result = await fetchUserPosts(1);
+    //console.log(result); // ['Post1','Post2']
+    //expect(result).toEqual(expectedPosts);
   });
 });
