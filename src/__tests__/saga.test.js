@@ -1,6 +1,6 @@
 // Follow this tutorial: https://medium.com/@lucaspenzeymoog/mocking-api-requests-with-jest-452ca2a8c7d7
 import SagaTester from 'redux-saga-tester';
-import mockAxios from 'axios';
+import mockAxios from '../__mocks__/axios';
 import reducer from '../reducer';
 import {getItemsSaga} from '../saga';
 
