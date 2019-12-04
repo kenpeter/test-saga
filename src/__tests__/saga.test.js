@@ -1,15 +1,21 @@
 // Follow this tutorial: https://medium.com/@lucaspenzeymoog/mocking-api-requests-with-jest-452ca2a8c7d7
 import moxios from 'moxios';
 import SagaTester from 'redux-saga-tester';
+// define fake axios
 import http from '../__mocks__/axios';
 import reducer from '../reducer';
 import {getItemsSaga} from '../saga';
 
+/*
+// this is our soruce code
 const fetchUserPosts = async id => {
+  // but we start to use fake axios???????
   const reponse = await http.get(`/users/${id}/posts`);
   return reponse.data;
 };
+*/
 
+// init state
 const initialState = {
   reducer: {
     loading: true,
@@ -17,13 +23,16 @@ const initialState = {
   }
 };
 
+// options
 const options = {onError: console.error.bind(console)};
 
 describe('Saga', () => {
+  // fake http
   beforeEach(() => {
     moxios.install(http);
   });
 
+  // fake http
   afterEach(() => {
     moxios.uninstall(http);
   });
@@ -36,30 +45,30 @@ describe('Saga', () => {
       options
     });
 
-    // start
+    // test saga
     sagaTester.start(getItemsSaga);
 
-    // fire
+    // start change state
     sagaTester.dispatch({type: 'ITEMS_GET'});
 
-    // exect
+    // expect
     const expectedPosts = ['Post1', 'Post2'];
 
-    // wait done
+    // real change state
     moxios.wait(() => {
       // api got result
       const request = moxios.requests.mostRecent();
-      // gets response, and assign to state
+      // real change state
       request.respondWith({status: 200, response: expectedPosts}); //mocked response
     });
 
-    // Next thing, not callback style
-    // state is done
+    // state stable
     await sagaTester.waitFor('ITEMS_GET_SUCCESS');
-    // now check state
+
+    // compare
     expect(sagaTester.getState()).toEqual({
       reducer: {
-        loading: true,
+        loading: false,
         items: ['Post1', 'Post2']
       }
     });
