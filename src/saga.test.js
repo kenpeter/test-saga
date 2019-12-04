@@ -1,10 +1,10 @@
 // Follow this tutorial: https://medium.com/@lucaspenzeymoog/mocking-api-requests-with-jest-452ca2a8c7d7
 import moxios from 'moxios';
 import SagaTester from 'redux-saga-tester';
-// define fake axios
-import http from '../__mocks__/axios';
-import reducer from '../reducer';
-import {getItemsSaga} from '../saga';
+// we need this fake axios
+import http from './__mocks__/axios';
+import reducer from './reducer';
+import {getItemsSaga} from './saga';
 
 /*
 // this is our soruce code
