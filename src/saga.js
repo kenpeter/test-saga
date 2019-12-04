@@ -8,7 +8,7 @@ async function myfetch(endpoint) {
 
 function* getItems() {
   //const endpoint = 'https://jsonplaceholder.typicode.com/todos/1';
-  const endpoint = 'http://sdfds';
+  const endpoint = 'http://testme.com/testme';
   const response = yield call(myfetch, endpoint);
   const items = response;
 
